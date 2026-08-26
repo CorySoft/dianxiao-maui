@@ -37,7 +37,7 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
       with:
-        packages: 'platforms;android-35 build-tools;35.0.0'
+        packages: 'platforms;android-36 build-tools;36.0.0'
 
     - name: Restore dependencies
       run: dotnet restore DianxiaoMaui.csproj
@@ -46,7 +46,7 @@ jobs:
       run: |
         dotnet build DianxiaoMaui.csproj \
           -c Release \
-          -f net10.0-android35.0 \
+          -f net10.0-android36.0 \
           -p:AndroidSdkDirectory=$ANDROID_HOME \
           -p:AndroidSigningKeyStore= \
           -p:AndroidSigningKeyAlias= \
