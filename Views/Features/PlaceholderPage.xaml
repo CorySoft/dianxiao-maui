@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DianxiaoMaui.Views.Features.PlaceholderPage"
+             Shell.NavBarIsVisible="True">
+
+    <VerticalStackLayout Spacing="16" VerticalOptions="Center" HorizontalOptions="Center">
+        <Frame WidthRequest="80" HeightRequest="80" CornerRadius="40"
+               BackgroundColor="{StaticResource DividerColor}" HasShadow="False">
+            <Image Source="ic_comingsoon.png" WidthRequest="40" HeightRequest="40" />
+        </Frame>
+        <Label x:Name="TitleLabel" Text="功能敬请期待" FontSize="18" FontAttributes="Bold"
+               TextColor="{StaticResource TextPrimaryColor}" HorizontalOptions="Center" />
+        <Label Text="该功能需要服务端支持（账号体系 / 云端 / 支付 / AI 模型）\n当前离线版本暂未开放，敬请期待后续版本。"
+               FontSize="13" TextColor="{StaticResource TextSecondaryColor}"
+               HorizontalOptions="Center" HorizontalTextAlignment="Center" />
+    </VerticalStackLayout>
+</ContentPage>

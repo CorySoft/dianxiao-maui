@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 前台服务类型定义：电话通话类，用于保持自动拨号无障碍服务存活 -->
+    <string name="foreground_service_type_phone_call">phoneCall</string>
+</resources>

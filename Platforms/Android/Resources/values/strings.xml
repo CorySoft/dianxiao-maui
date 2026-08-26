@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_description">电销星自动拨号：用于在拨号界面自动点击“呼叫”按钮，实现自动外呼。开启后请保持应用前台运行。</string>
+</resources>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:tab="clr-namespace:DianxiaoMaui.Views.Tabs"
+       xmlns:feature="clr-namespace:DianxiaoMaui.Views.Features"
+       x:Class="DianxiaoMaui.AppShell"
+       Shell.FlyoutBehavior="Disabled"
+       BackgroundColor="{StaticResource PageBackgroundColor}">
+
+    <TabBar>
+        <Tab Title="客户" Icon="ic_tab_contact.png">
+            <ShellContent ContentTemplate="{DataTemplate tab:CustomersPage}" />
+        </Tab>
+        <Tab Title="我的" Icon="ic_tab_mine.png">
+            <ShellContent ContentTemplate="{DataTemplate tab:MinePage}" />
+        </Tab>
+        <Tab Title="设置" Icon="ic_tab_setting.png">
+            <ShellContent ContentTemplate="{DataTemplate tab:SettingsPage}" />
+        </Tab>
+    </TabBar>
+
+    <!-- 功能页路由 -->
+    <ShellContent Route="ManualDialPage" ContentTemplate="{DataTemplate feature:ManualDialPage}" />
+    <ShellContent Route="CallHistoryPage" ContentTemplate="{DataTemplate feature:CallHistoryPage}" />
+    <ShellContent Route="ContactDetailPage" ContentTemplate="{DataTemplate feature:ContactDetailPage}" />
+    <ShellContent Route="DialSettingsPage" ContentTemplate="{DataTemplate feature:DialSettingsPage}" />
+    <ShellContent Route="PrefixSettingsPage" ContentTemplate="{DataTemplate feature:PrefixSettingsPage}" />
+    <ShellContent Route="BlacklistPage" ContentTemplate="{DataTemplate feature:BlacklistPage}" />
+    <ShellContent Route="ReportPage" ContentTemplate="{DataTemplate feature:ReportPage}" />
+    <ShellContent Route="PlaceholderPage" ContentTemplate="{DataTemplate feature:PlaceholderPage}" />
+
+</Shell>

@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodel="clr-namespace:DianxiaoMaui.ViewModels"
+             xmlns:model="clr-namespace:DianxiaoMaui.Models"
+             x:Class="DianxiaoMaui.Views.Tabs.MinePage"
+             Title="我的"
+             Shell.NavBarIsVisible="False">
+
+    <ContentPage.BindingContext>
+        <viewmodel:MineViewModel />
+    </ContentPage.BindingContext>
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="12" Padding="12,12,12,24">
+
+            <!-- 自动拨号面板 -->
+            <Frame Style="{StaticResource CardView}" Padding="16">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="自动拨号" Style="{StaticResource SectionTitle}" />
+
+                    <Editor x:Name="PasteEditor"
+                            Text="{Binding PasteText, Mode=TwoWay}"
+                            Placeholder="粘贴号码（每行一个，或从 CSV 导入）"
+                            AutoSize="TextChanges"
+                            HeightRequest="80"
+                            BackgroundColor="{StaticResource PageBackgroundColor}"
+                            TextColor="{StaticResource TextPrimaryColor}"
+                            FontSize="13" />
+
+                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                        <Button Grid.Column="0" Text="粘贴导入" Style="{StaticResource PrimaryButton}"
+                                Command="{Binding ImportPasteCommand}" FontSize="13" HeightRequest="40" />
+                        <Button Grid.Column="1" Text="CSV导入" Style="{StaticResource SecondaryButton}"
+                                Command="{Binding ImportCsvCommand}" FontSize="13" HeightRequest="40" />
+                        <Button Grid.Column="2" Text="添加号码" Style="{StaticResource SecondaryButton}"
+                                Command="{Binding AddNumberCommand}" FontSize="13" HeightRequest="40" />
+                    </Grid>
+
+                    <!-- 任务列表 -->
+                    <CollectionView ItemsSource="{Binding Tasks}"
+                                    MaximumHeightRequest="220"
+                                    EmptyView="暂无任务，先导入号码"
+                                    Margin="0,4,0,0">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="model:CallTask">
+                                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8" Padding="0,6">
+                                    <Label Grid.Column="0"
+                                           Text="{Binding MaskedNumber}"
+                                           FontSize="14"
+                                           TextColor="{StaticResource TextPrimaryColor}"
+                                           VerticalOptions="Center" />
+                                    <Label Grid.Column="1"
+                                           Text="{Binding StatusText}"
+                                           FontSize="12"
+                                           TextColor="{StaticResource TextSecondaryColor}"
+                                           VerticalOptions="Center" />
+                                    <Label Grid.Column="2"
+                                           Text="{Binding ResultText}"
+                                           FontSize="12"
+                                           VerticalOptions="Center">
+                                        <Label.TextColor>
+                                            <OnPlatform x:TypeArguments="Color">
+                                                <OnPlatform.Platforms>
+                                                    <On Platform="Android">
+                                                        <OnIdiom x:TypeArguments="Color">
+                                                            <OnIdiom.Phone>{StaticResource SuccessColor}</OnIdiom.Phone>
+                                                        </OnIdiom>
+                                                    </On>
+                                                </OnPlatform.Platforms>
+                                            </OnPlatform>
+                                        </Label.TextColor>
+                                    </Label>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                    <!-- 进度 + 控制 -->
+                    <Label Text="{Binding ProgressText}"
+                           FontSize="13"
+                           TextColor="{StaticResource TextSecondaryColor}"
+                           Margin="0,4,0,0" />
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                        <Button Grid.Column="0" Text="开始外呼" Style="{StaticResource PrimaryButton}"
+                                Command="{Binding StartCommand}" IsVisible="{Binding IsRunning, Converter={StaticResource InverseBoolConverter}}" />
+                        <Button Grid.Column="0" Text="停止" Style="{StaticResource DangerButton}"
+                                Command="{Binding StopCommand}" IsVisible="{Binding IsRunning}" />
+                        <Button Grid.Column="1" Text="清空任务" Style="{StaticResource SecondaryButton}"
+                                Command="{Binding ClearTasksCommand}" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- 功能网格 -->
+            <Frame Style="{StaticResource CardView}" Padding="12">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="功能" Style="{StaticResource SectionTitle}" />
+                    <FlexLayout Direction="Row" Wrap="Wrap" JustifyContent="SpaceAround" AlignItems="Start">
+                        <!-- 手动拨号 -->
+                        <VerticalStackLayout WidthRequest="90" Spacing="4" Padding="6">
+                            <Frame WidthRequest="48" HeightRequest="48" CornerRadius="24"
+                                   BackgroundColor="{StaticResource PrimaryColor}" HasShadow="False"
+                                   HorizontalOptions="Center">
+                                <Image Source="ic_dial.png" WidthRequest="24" HeightRequest="24" />
+                            </Frame>
+                            <Label Text="手动拨号" FontSize="12" HorizontalOptions="Center"
+                                   TextColor="{StaticResource TextPrimaryColor}" />
+                        </VerticalStackLayout>
+                        <!-- 通话记录 -->
+                        <VerticalStackLayout WidthRequest="90" Spacing="4" Padding="6">
+                            <Frame WidthRequest="48" HeightRequest="48" CornerRadius="24"
+                                   BackgroundColor="{StaticResource PrimaryColor}" HasShadow="False"
+                                   HorizontalOptions="Center">
+                                <Image Source="ic_history.png" WidthRequest="24" HeightRequest="24" />
+                            </Frame>
+                            <Label Text="通话记录" FontSize="12" HorizontalOptions="Center"
+                                   TextColor="{StaticResource TextPrimaryColor}" />
+                        </VerticalStackLayout>
+                        <!-- 客户管理 -->
+                        <VerticalStackLayout WidthRequest="90" Spacing="4" Padding="6">
+                            <Frame WidthRequest="48" HeightRequest="48" CornerRadius="24"
+                                   BackgroundColor="{StaticResource PrimaryColor}" HasShadow="False"
+                                   HorizontalOptions="Center">
+                                <Image Source="ic_contact.png" WidthRequest="24" HeightRequest="24" />
+                            </Frame>
+                            <Label Text="客户管理" FontSize="12" HorizontalOptions="Center"
+                                   TextColor="{StaticResource TextPrimaryColor}" />
+                        </VerticalStackLayout>
+                        <!-- 拨号设置 -->
+                        <VerticalStackLayout WidthRequest="90" Spacing="4" Padding="6">
+                            <Frame WidthRequest="48" HeightRequest="48" CornerRadius="24"
+                                   BackgroundColor="{StaticResource PrimaryColor}" HasShadow="False"
+                                   HorizontalOptions="Center">
+                                <Image Source="ic_settings.png" WidthRequest="24" HeightRequest="24" />
+                            </Frame>
+                            <Label Text="拨号设置" FontSize="12" HorizontalOptions="Center"
+                                   TextColor="{StaticResource TextPrimaryColor}" />
+                        </VerticalStackLayout>
+                        <!-- 双卡前缀 -->
+                        <VerticalStackLayout WidthRequest="90" Spacing="4" Padding="6">
+                            <Frame WidthRequest="48" HeightRequest="48" CornerRadius="24"
+                                   BackgroundColor="{StaticResource PrimaryColor}" HasShadow="False"
+                                   HorizontalOptions="Center">
+                                <Image Source="ic_sim.png" WidthRequest="24" HeightRequest="24" />
+                            </Frame>
+                            <Label Text="双卡前缀" FontSize="12" HorizontalOptions="Center"
+                                   TextColor="{StaticResource TextPrimaryColor}" />
+                        </VerticalStackLayout>
+                        <!-- 黑名单 -->
+                        <VerticalStackLayout WidthRequest="90" Spacing="4" Padding="6">
+                            <Frame WidthRequest="48" HeightRequest="48" CornerRadius="24"
+                                   BackgroundColor="{StaticResource PrimaryColor}" HasShadow="False"
+                                   HorizontalOptions="Center">
+                                <Image Source="ic_blacklist.png" WidthRequest="24" HeightRequest="24" />
+                            </Frame>
+                            <Label Text="黑名单" FontSize="12" HorizontalOptions="Center"
+                                   TextColor="{StaticResource TextPrimaryColor}" />
+                        </VerticalStackLayout>
+                        <!-- 短信 -->
+                        <VerticalStackLayout WidthRequest="90" Spacing="4" Padding="6">
+                            <Frame WidthRequest="48" HeightRequest="48" CornerRadius="24"
+                                   BackgroundColor="{StaticResource DividerColor}" HasShadow="False"
+                                   HorizontalOptions="Center">
+                                <Image Source="ic_sms.png" WidthRequest="24" HeightRequest="24" />
+                            </Frame>
+                            <Label Text="短信" FontSize="12" HorizontalOptions="Center" TextColor="{StaticResource TextSecondaryColor}" />
+                            <Label Text="敬请期待" FontSize="9" HorizontalOptions="Center" TextColor="{StaticResource PlaceholderColor}" />
+                        </VerticalStackLayout>
+                        <!-- 统计报表 -->
+                        <VerticalStackLayout WidthRequest="90" Spacing="4" Padding="6">
+                            <Frame WidthRequest="48" HeightRequest="48" CornerRadius="24"
+                                   BackgroundColor="{StaticResource PrimaryColor}" HasShadow="False"
+                                   HorizontalOptions="Center">
+                                <Image Source="ic_report.png" WidthRequest="24" HeightRequest="24" />
+                            </Frame>
+                            <Label Text="统计报表" FontSize="12" HorizontalOptions="Center"
+                                   TextColor="{StaticResource TextPrimaryColor}" />
+                        </VerticalStackLayout>
+                        <!-- 云端备份 -->
+                        <VerticalStackLayout WidthRequest="90" Spacing="4" Padding="6">
+                            <Frame WidthRequest="48" HeightRequest="48" CornerRadius="24"
+                                   BackgroundColor="{StaticResource DividerColor}" HasShadow="False"
+                                   HorizontalOptions="Center">
+                                <Image Source="ic_cloud.png" WidthRequest="24" HeightRequest="24" />
+                            </Frame>
+                            <Label Text="云端备份" FontSize="12" HorizontalOptions="Center" TextColor="{StaticResource TextSecondaryColor}" />
+                            <Label Text="敬请期待" FontSize="9" HorizontalOptions="Center" TextColor="{StaticResource PlaceholderColor}" />
+                        </VerticalStackLayout>
+                        <!-- 账号 -->
+                        <VerticalStackLayout WidthRequest="90" Spacing="4" Padding="6">
+                            <Frame WidthRequest="48" HeightRequest="48" CornerRadius="24"
+                                   BackgroundColor="{StaticResource DividerColor}" HasShadow="False"
+                                   HorizontalOptions="Center">
+                                <Image Source="ic_account.png" WidthRequest="24" HeightRequest="24" />
+                            </Frame>
+                            <Label Text="账号" FontSize="12" HorizontalOptions="Center" TextColor="{StaticResource TextSecondaryColor}" />
+                            <Label Text="敬请期待" FontSize="9" HorizontalOptions="Center" TextColor="{StaticResource PlaceholderColor}" />
+                        </VerticalStackLayout>
+                        <!-- 会员中心 -->
+                        <VerticalStackLayout WidthRequest="90" Spacing="4" Padding="6">
+                            <Frame WidthRequest="48" HeightRequest="48" CornerRadius="24"
+                                   BackgroundColor="{StaticResource DividerColor}" HasShadow="False"
+                                   HorizontalOptions="Center">
+                                <Image Source="ic_vip.png" WidthRequest="24" HeightRequest="24" />
+                            </Frame>
+                            <Label Text="会员中心" FontSize="12" HorizontalOptions="Center" TextColor="{StaticResource TextSecondaryColor}" />
+                            <Label Text="敬请期待" FontSize="9" HorizontalOptions="Center" TextColor="{StaticResource PlaceholderColor}" />
+                        </VerticalStackLayout>
+                        <!-- AI智能分析 -->
+                        <VerticalStackLayout WidthRequest="90" Spacing="4" Padding="6">
+                            <Frame WidthRequest="48" HeightRequest="48" CornerRadius="24"
+                                   BackgroundColor="{StaticResource DividerColor}" HasShadow="False"
+                                   HorizontalOptions="Center">
+                                <Image Source="ic_ai.png" WidthRequest="24" HeightRequest="24" />
+                            </Frame>
+                            <Label Text="AI分析" FontSize="12" HorizontalOptions="Center" TextColor="{StaticResource TextSecondaryColor}" />
+                            <Label Text="敬请期待" FontSize="9" HorizontalOptions="Center" TextColor="{StaticResource PlaceholderColor}" />
+                        </VerticalStackLayout>
+                    </FlexLayout>
+                </VerticalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodel="clr-namespace:DianxiaoMaui.ViewModels"
+             x:Class="DianxiaoMaui.Views.Features.PrefixSettingsPage"
+             Title="双卡前缀设置"
+             Shell.NavBarIsVisible="True">
+
+    <ContentPage.BindingContext>
+        <viewmodel:PrefixSettingsViewModel />
+    </ContentPage.BindingContext>
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="12" Padding="12,12,12,24">
+
+            <!-- 卡1 -->
+            <Frame Style="{StaticResource CardView}" Padding="0" HasShadow="False">
+                <VerticalStackLayout Spacing="0">
+                    <Label Text="卡 1 (主卡) 前缀" Style="{StaticResource SectionTitle}" Padding="16,16,16,8" />
+                    <StackLayout Padding="16,0,16,16" Spacing="8">
+                        <CollectionView ItemsSource="{Binding Sim1Prefixes}"
+                                        EmptyView="暂无前缀，点击下方添加"
+                                        Margin="0,0,0,8">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Padding="0,4">
+                                        <Label Grid.Column="0" Text="{Binding .}" FontSize="15"
+                                               TextColor="{StaticResource TextPrimaryColor}" VerticalOptions="Center" />
+                                        <Button Grid.Column="1" Text="删除" Style="{StaticResource SecondaryButton}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:PrefixSettingsViewModel}}, Path=RemoveSim1PrefixCommand}"
+                                                CommandParameter="{Binding .}" FontSize="12" HeightRequest="32" WidthRequest="60" />
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                            <Entry Grid.Column="0" Text="{Binding NewSim1Prefix, Mode=TwoWay}"
+                                   Placeholder="输入前缀（如 10086）"
+                                   Style="{StaticResource EntryStyle}" />
+                            <Button Grid.Column="1" Text="添加" Style="{StaticResource PrimaryButton}"
+                                    Command="{Binding AddSim1PrefixCommand}" HeightRequest="44" WidthRequest="80" />
+                        </Grid>
+                    </StackLayout>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- 卡2 -->
+            <Frame Style="{StaticResource CardView}" Padding="0" HasShadow="False">
+                <VerticalStackLayout Spacing="0">
+                    <Label Text="卡 2 (副卡) 前缀" Style="{StaticResource SectionTitle}" Padding="16,16,16,8" />
+                    <StackLayout Padding="16,0,16,16" Spacing="8">
+                        <CollectionView ItemsSource="{Binding Sim2Prefixes}"
+                                        EmptyView="暂无前缀，点击下方添加"
+                                        Margin="0,0,0,8">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Padding="0,4">
+                                        <Label Grid.Column="0" Text="{Binding .}" FontSize="15"
+                                               TextColor="{StaticResource TextPrimaryColor}" VerticalOptions="Center" />
+                                        <Button Grid.Column="1" Text="删除" Style="{StaticResource SecondaryButton}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:PrefixSettingsViewModel}}, Path=RemoveSim2PrefixCommand}"
+                                                CommandParameter="{Binding .}" FontSize="12" HeightRequest="32" WidthRequest="60" />
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                            <Entry Grid.Column="0" Text="{Binding NewSim2Prefix, Mode=TwoWay}"
+                                   Placeholder="输入前缀（如 10086）"
+                                   Style="{StaticResource EntryStyle}" />
+                            <Button Grid.Column="1" Text="添加" Style="{StaticResource PrimaryButton}"
+                                    Command="{Binding AddSim2PrefixCommand}" HeightRequest="44" WidthRequest="80" />
+                        </Grid>
+                    </StackLayout>
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame Style="{StaticResource CardView}" Padding="16">
+                <Label Text="说明：双卡前缀用于自动识别号码应由哪张 SIM 卡拨打。真正的双卡直拨需要设置为默认拨号器（M3 版本实现），目前仅在手动拨号时自动加前缀。"
+                       FontSize="12" TextColor="{StaticResource TextSecondaryColor}" />
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

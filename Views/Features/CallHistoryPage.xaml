@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodel="clr-namespace:DianxiaoMaui.ViewModels"
+             xmlns:model="clr-namespace:DianxiaoMaui.Models"
+             x:Class="DianxiaoMaui.Views.Features.CallHistoryPage"
+             Title="通话记录"
+             Shell.NavBarIsVisible="True">
+
+    <ContentPage.BindingContext>
+        <viewmodel:CallHistoryViewModel />
+    </ContentPage.BindingContext>
+
+    <VerticalStackLayout Spacing="0">
+        <!-- 筛选 -->
+        <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8" Padding="12">
+            <Button Grid.Column="0" Text="全部" Command="{Binding FilterCommand}" CommandParameter="0"
+                    Style="{Binding SelectedFilter, Converter={StaticResource FilterStyleConverter}, ConverterParameter=0}" />
+            <Button Grid.Column="1" Text="已接通" Command="{Binding FilterCommand}" CommandParameter="1"
+                    Style="{Binding SelectedFilter, Converter={StaticResource FilterStyleConverter}, ConverterParameter=1}" />
+            <Button Grid.Column="2" Text="未接通" Command="{Binding FilterCommand}" CommandParameter="2"
+                    Style="{Binding SelectedFilter, Converter={StaticResource FilterStyleConverter}, ConverterParameter=2}" />
+        </Grid>
+
+        <CollectionView ItemsSource="{Binding Logs}"
+                        EmptyView="暂无通话记录"
+                        Margin="12,0,12,12">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="model:CallLog">
+                    <Frame Style="{StaticResource CardView}" Padding="14">
+                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto" RowSpacing="4" ColumnSpacing="8">
+                            <Label Grid.Column="0" Grid.Row="0" Text="{Binding PhoneNumber}"
+                                   FontSize="16" FontAttributes="Bold" TextColor="{StaticResource TextPrimaryColor}" />
+                            <Label Grid.Column="1" Grid.Row="0" Text="{Binding TimeText}"
+                                   FontSize="12" TextColor="{StaticResource TextSecondaryColor}" HorizontalOptions="End" />
+
+                            <Label Grid.Column="0" Grid.Row="1" Text="{Binding ConnectedText}"
+                                   FontSize="13" TextColor="{Binding Connected, Converter={StaticResource ConnectedColorConverter}}" />
+                            <Label Grid.Column="1" Grid.Row="1" Text="{Binding DurationText}"
+                                   FontSize="13" TextColor="{StaticResource TextSecondaryColor}" HorizontalOptions="End" />
+
+                            <HorizontalStackLayout Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Spacing="8" IsVisible="{Binding HasRecording}">
+                                <Image Source="ic_play.png" WidthRequest="16" HeightRequest="16" VerticalOptions="Center" />
+                                <Label Text="播放录音" FontSize="12" TextColor="{StaticResource PrimaryColor}" VerticalOptions="Center">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding PlayCommand}" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </VerticalStackLayout>
+</ContentPage>
