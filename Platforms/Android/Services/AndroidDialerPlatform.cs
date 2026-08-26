@@ -1,4 +1,5 @@
 using Android.App;
+using Android.AccessibilityServices;
 using Android.Content;
 using Android.OS;
 using Android.Telecom;
@@ -98,8 +99,8 @@ public class AndroidDialerPlatform
         _waitingPhone = phone;
 
         _telephony = (TelephonyManager)Platform.AppContext!.GetSystemService(Context.TelephonyService);
-        _listener = new CallStateListener(this);
-        _telephony.Listen(_listener, PhoneStateListenerFlags.CallState);
+        _listener = new Android.Telephony.CallStateListener(this);
+        _telephony.Listen(_listener, PhoneStateListenerFlags.Android.Telephony.CallState);
 
         token.Register(() =>
         {
@@ -111,16 +112,16 @@ public class AndroidDialerPlatform
         return _callEndTcs.Task;
     }
 
-    internal void OnCallStateChanged(CallState state, string? incomingNumber)
+    internal void OnAndroid.Telephony.CallStateChanged(Android.Telephony.CallState state, string? incomingNumber)
     {
         if (_callEndTcs is null) return;
 
         switch (state)
         {
-            case CallState.Offhook:
+            case Android.Telephony.CallState.Offhook:
                 // 已接通
                 break;
-            case CallState.Idle:
+            case Android.Telephony.CallState.Idle:
                 if (_callEndTcs.Task.IsCompleted) break;
                 // 通话结束
                 _callEndTcs.TrySetResult(true);
@@ -140,15 +141,15 @@ public class AndroidDialerPlatform
         _waitingPhone = null;
     }
 
-    private class CallStateListener : PhoneStateListener
+    private class Android.Telephony.CallStateListener : PhoneStateListener
     {
         private readonly AndroidDialerPlatform _owner;
-        public CallStateListener(AndroidDialerPlatform owner) => _owner = owner;
+        public Android.Telephony.CallStateListener(AndroidDialerPlatform owner) => _owner = owner;
 
-        public override void OnCallStateChanged(CallState state, string? incomingNumber)
+        public override void OnAndroid.Telephony.CallStateChanged(Android.Telephony.CallState state, string? incomingNumber)
         {
-            base.OnCallStateChanged(state, incomingNumber);
-            _owner.OnCallStateChanged(state, incomingNumber);
+            base.OnAndroid.Telephony.CallStateChanged(state, incomingNumber);
+            _owner.OnAndroid.Telephony.CallStateChanged(state, incomingNumber);
         }
     }
 
@@ -193,7 +194,7 @@ public class AndroidDialerPlatform
 #region 前台服务（保持无障碍服务存活）
 
 [Service(Name = "com.xinghe.dianxiao.DialerForegroundService",
-    ForegroundServiceType = ForegroundService.TypePhoneCall,
+    ForegroundServiceType = Android.App.ForegroundService.TypePhoneCall,
     Exported = false)]
 public class DialerForegroundService : Service
 {
@@ -221,7 +222,7 @@ public class DialerForegroundService : Service
             .SetOngoing(true)
             .Build();
 
-        StartForeground(FOREGROUND_ID, notification, ForegroundService.TypePhoneCall);
+        StartForeground(FOREGROUND_ID, notification, Android.App.ForegroundService.TypePhoneCall);
         return StartCommandResult.Sticky;
     }
 }
