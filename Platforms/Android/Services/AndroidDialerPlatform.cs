@@ -99,7 +99,7 @@ public class AndroidDialerPlatform
         _waitingPhone = phone;
 
         _telephony = (TelephonyManager)Platform.AppContext!.GetSystemService(Context.TelephonyService);
-        _listener = new Android.Telephony.CallStateListener(this);
+        _listener = new CallStateListener(this);
         _telephony.Listen(_listener, PhoneStateListenerFlags.Android.Telephony.CallState);
 
         token.Register(() =>
@@ -112,7 +112,7 @@ public class AndroidDialerPlatform
         return _callEndTcs.Task;
     }
 
-    internal void OnAndroid.Telephony.CallStateChanged(Android.Telephony.CallState state, string? incomingNumber)
+    internal void OnCallStateChanged(Android.Telephony.CallState state, string? incomingNumber)
     {
         if (_callEndTcs is null) return;
 
@@ -141,15 +141,15 @@ public class AndroidDialerPlatform
         _waitingPhone = null;
     }
 
-    private class Android.Telephony.CallStateListener : PhoneStateListener
+    private class CallStateListener : PhoneStateListener
     {
         private readonly AndroidDialerPlatform _owner;
-        public Android.Telephony.CallStateListener(AndroidDialerPlatform owner) => _owner = owner;
+        public CallStateListener(AndroidDialerPlatform owner) => _owner = owner;
 
-        public override void OnAndroid.Telephony.CallStateChanged(Android.Telephony.CallState state, string? incomingNumber)
+        public override void OnCallStateChanged(Android.Telephony.CallState state, string? incomingNumber)
         {
-            base.OnAndroid.Telephony.CallStateChanged(state, incomingNumber);
-            _owner.OnAndroid.Telephony.CallStateChanged(state, incomingNumber);
+            base.OnCallStateChanged(state, incomingNumber);
+            _owner.OnCallStateChanged(state, incomingNumber);
         }
     }
 
