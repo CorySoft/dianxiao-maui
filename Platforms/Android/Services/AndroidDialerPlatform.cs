@@ -189,7 +189,7 @@ public class AndroidDialerPlatform
 #region 前台服务（保持无障碍服务存活）
 
 [Service(Name = "com.xinghe.dianxiao.DialerForegroundService",
-    ForegroundServiceType = (global::Android.Content.PM.ForegroundService)4, // TypePhoneCall
+    ForegroundServiceType = (global::Android.Content.PM.ForegroundService)512, // TypePhoneCall
     Exported = false)]
 public class DialerForegroundService : Service
 {
@@ -218,7 +218,7 @@ public class DialerForegroundService : Service
 
         if (Build.VERSION.SdkInt >= BuildVersionCodes.Q)
         {
-            StartForeground(FOREGROUND_ID, notification, (global::Android.Content.PM.ForegroundService)4);
+            StartForeground(FOREGROUND_ID, notification, (global::Android.Content.PM.ForegroundService)512);
         }
         else
         {
