@@ -218,7 +218,7 @@ public class DialerForegroundService : Service
 
         if (Build.VERSION.SdkInt >= BuildVersionCodes.Q)
         {
-            StartForeground(FOREGROUND_ID, notification, 4);
+            StartForeground(FOREGROUND_ID, notification, (global::Android.Content.PM.ForegroundService)4);
         }
         else
         {
