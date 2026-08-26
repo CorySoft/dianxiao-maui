@@ -38,7 +38,7 @@ public class AndroidDialerPlatform
 
     public Task DialAsync(string phone)
     {
-        var context = Platform.AppContext;
+        var context = Android.App.Application.Context;
         if (context == null) return Task.CompletedTask;
 
         // 启动前台服务（确保无障碍服务存活）
@@ -54,7 +54,7 @@ public class AndroidDialerPlatform
 
     private void StartForegroundService()
     {
-        var context = Platform.AppContext;
+        var context = Android.App.Application.Context;
         if (context == null) return;
 
         if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
@@ -98,7 +98,7 @@ public class AndroidDialerPlatform
         _callEndTcs = new TaskCompletionSource<bool>();
         _waitingPhone = phone;
 
-        _telephony = (TelephonyManager)Platform.AppContext!.GetSystemService(Context.TelephonyService);
+        _telephony = (TelephonyManager)Android.App.Application.Context!.GetSystemService(Context.TelephonyService);
         _listener = new CallStateListener(this);
         _telephony.Listen(_listener, AndroidTelephony.PhoneStateListenerFlags.CallState);
 
@@ -141,7 +141,7 @@ public class AndroidDialerPlatform
         _waitingPhone = null;
     }
 
-    private class CallStateListener : PhoneStateListener
+    private class CallStateListener : AndroidTelephony.PhoneStateListener
     {
         private readonly AndroidDialerPlatform _owner;
         public CallStateListener(AndroidDialerPlatform owner) => _owner = owner;
@@ -161,7 +161,7 @@ public class AndroidDialerPlatform
     {
         try
         {
-            var context = Platform.AppContext;
+            var context = Android.App.Application.Context;
             if (context == null) return Task.FromResult(false);
 
             var enabledServices = Settings.Secure.GetString(context.ContentResolver,
@@ -179,7 +179,7 @@ public class AndroidDialerPlatform
 
     public Task OpenAccessibilitySettingsAsync()
     {
-        var context = Platform.AppContext;
+        var context = Android.App.Application.Context;
         if (context == null) return Task.CompletedTask;
 
         var intent = new Intent(Settings.ActionAccessibilitySettings);
