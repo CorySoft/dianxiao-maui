@@ -69,7 +69,7 @@ public partial class MineViewModel : ObservableObject
         ProgressText = $"待拨打 {PendingCount} 个 · 已接通 {ConnectedCount} 个";
     }
 
-    private void OnStateChanged(int state)
+    private void OnStateChanged(object? sender, int state)
     {
         MainThread.BeginInvokeOnMainThread(() =>
         {
@@ -77,12 +77,12 @@ public partial class MineViewModel : ObservableObject
         });
     }
 
-    private void OnProgressChanged(string msg)
+    private void OnProgressChanged(object? sender, string msg)
     {
         MainThread.BeginInvokeOnMainThread(() => ProgressText = msg);
     }
 
-    private void OnTaskCompleted(CallTask task)
+    private void OnTaskCompleted(object? sender, CallTask task)
     {
         MainThread.BeginInvokeOnMainThread(async () =>
         {

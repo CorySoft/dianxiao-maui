@@ -14,6 +14,5 @@ public partial class PlaceholderPage : ContentPage
     {
         base.OnNavigatedTo(args);
         TitleLabel.Text = Title;
-        Shell.SetTitle(this, Title);
     }
 }

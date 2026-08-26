@@ -26,7 +26,7 @@ public partial class BlacklistViewModel : ObservableObject
         LoadAsync();
     }
 
-    private async void LoadAsync()
+    private async Task LoadAsync()
     {
         var list = await DatabaseService.Instance.GetBlacklistAsync();
         Blacklist.Clear();

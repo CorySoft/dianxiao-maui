@@ -1,9 +1,7 @@
-using Android.App;
 using Android.AccessibilityServices;
 using Android.Content;
 using Android.OS;
 using Android.Telecom;
-using AndroidTelephony = Android.Telephony;
 using Android.Views.Accessibility;
 using AndroidX.Core.App;
 using DianxiaoMaui.Models;
@@ -11,6 +9,9 @@ using DianxiaoMaui.Services;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Platform;
+using AppContext = global::Android.App.Application;
+using NetUri = global::Android.Net.Uri;
+using AndroidResource = global::Android.Resource.Drawable;
 
 namespace DianxiaoMaui.Platforms.Android.Services;
 
@@ -27,7 +28,6 @@ public class AndroidDialerPlatform
 
     private AndroidDialerPlatform()
     {
-        // 注册平台代理
         PlatformDialer.DialHandler = DialAsync;
         PlatformDialer.WaitForCallEndHandler = WaitForCallEndAsync;
         PlatformDialer.IsAccessibilityEnabledHandler = IsAccessibilityEnabledAsync;
@@ -38,14 +38,12 @@ public class AndroidDialerPlatform
 
     public Task DialAsync(string phone)
     {
-        var context = Android.App.Application.Context;
+        var context = AppContext.Context;
         if (context == null) return Task.CompletedTask;
 
-        // 启动前台服务（确保无障碍服务存活）
         StartForegroundService();
 
-        // 使用 ACTION_DIAL 预填号码，让用户确认（或 ACTION_CALL 需权限）
-        var uri = Android.Net.Uri.Parse("tel:" + phone);
+        var uri = NetUri.Parse("tel:" + phone);
         var intent = new Intent(Intent.ActionDial, uri);
         intent.AddFlags(ActivityFlags.NewTask);
         context.StartActivity(intent);
@@ -54,7 +52,7 @@ public class AndroidDialerPlatform
 
     private void StartForegroundService()
     {
-        var context = Android.App.Application.Context;
+        var context = AppContext.Context;
         if (context == null) return;
 
         if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
@@ -68,7 +66,7 @@ public class AndroidDialerPlatform
         var notification = new NotificationCompat.Builder(context, CHANNEL_ID)
             .SetContentTitle("自动拨号运行中")
             .SetContentText("正在监听拨号界面，自动点击呼叫")
-            .SetSmallIcon(Android.Resource.Drawable.SymActionCall)
+            .SetSmallIcon(AndroidResource.SymActionCall)
             .SetPriority(NotificationCompat.PriorityLow)
             .SetOngoing(true)
             .Build();
@@ -88,19 +86,17 @@ public class AndroidDialerPlatform
 
     #region 通话状态监听
 
-    private AndroidTelephony.TelephonyManager? _telephony;
-    private AndroidTelephony.PhoneStateListener? _listener;
+    private global::Android.Telephony.TelephonyManager? _telephony;
+    private global::Android.Telephony.PhoneStateListener? _listener;
     private TaskCompletionSource<bool>? _callEndTcs;
-    private string? _waitingPhone;
 
     public Task<bool> WaitForCallEndAsync(string phone, CancellationToken token)
     {
         _callEndTcs = new TaskCompletionSource<bool>();
-        _waitingPhone = phone;
 
-        _telephony = (TelephonyManager)Android.App.Application.Context!.GetSystemService(Context.TelephonyService);
+        _telephony = (global::Android.Telephony.TelephonyManager)AppContext.Context!.GetSystemService(Context.TelephonyService);
         _listener = new CallStateListener(this);
-        _telephony.Listen(_listener, AndroidTelephony.PhoneStateListenerFlags.CallState);
+        _telephony.Listen(_listener, global::Android.Telephony.PhoneStateListenerFlags.CallState);
 
         token.Register(() =>
         {
@@ -112,18 +108,16 @@ public class AndroidDialerPlatform
         return _callEndTcs.Task;
     }
 
-    internal void OnCallStateChanged(AndroidTelephony.CallState state, string? incomingNumber)
+    internal void OnCallStateChanged(global::Android.Telephony.CallState state, string? incomingNumber)
     {
         if (_callEndTcs is null) return;
 
         switch (state)
         {
-            case AndroidTelephony.CallState.Offhook:
-                // 已接通
+            case global::Android.Telephony.CallState.Offhook:
                 break;
-            case AndroidTelephony.CallState.Idle:
+            case global::Android.Telephony.CallState.Idle:
                 if (_callEndTcs.Task.IsCompleted) break;
-                // 通话结束
                 _callEndTcs.TrySetResult(true);
                 StopListening();
                 break;
@@ -134,19 +128,18 @@ public class AndroidDialerPlatform
     {
         if (_telephony != null && _listener != null)
         {
-            _telephony.Listen(_listener, AndroidTelephony.AndroidTelephony.PhoneStateListenerFlags.None);
+            _telephony.Listen(_listener, global::Android.Telephony.AndroidTelephony.PhoneStateListenerFlags.None);
             _listener = null;
         }
         _telephony = null;
-        _waitingPhone = null;
     }
 
-    private class CallStateListener : AndroidTelephony.PhoneStateListener
+    private class CallStateListener : global::Android.Telephony.PhoneStateListener
     {
         private readonly AndroidDialerPlatform _owner;
         public CallStateListener(AndroidDialerPlatform owner) => _owner = owner;
 
-        public override void OnCallStateChanged(AndroidTelephony.CallState state, string? incomingNumber)
+        public override void OnCallStateChanged(global::Android.Telephony.CallState state, string? incomingNumber)
         {
             base.OnCallStateChanged(state, incomingNumber);
             _owner.OnCallStateChanged(state, incomingNumber);
@@ -161,11 +154,12 @@ public class AndroidDialerPlatform
     {
         try
         {
-            var context = Android.App.Application.Context;
+            var context = AppContext.Context;
             if (context == null) return Task.FromResult(false);
 
-            var enabledServices = Settings.Secure.GetString(context.ContentResolver,
-                Settings.Secure.EnabledAccessibilityServices);
+            var enabledServices = global::Android.provider.Settings.Secure.GetString(
+                context.ContentResolver,
+                global::Android.provider.Settings.Secure.EnabledAccessibilityServices);
             if (string.IsNullOrEmpty(enabledServices)) return Task.FromResult(false);
 
             var pkg = context.PackageName;
@@ -179,10 +173,10 @@ public class AndroidDialerPlatform
 
     public Task OpenAccessibilitySettingsAsync()
     {
-        var context = Android.App.Application.Context;
+        var context = AppContext.Context;
         if (context == null) return Task.CompletedTask;
 
-        var intent = new Intent(Settings.ActionAccessibilitySettings);
+        var intent = new Intent(global::Android.provider.Settings.ActionAccessibilitySettings);
         intent.AddFlags(ActivityFlags.NewTask);
         context.StartActivity(intent);
         return Task.CompletedTask;
@@ -202,7 +196,6 @@ public class DialerForegroundService : Service
 
     public override StartCommandResult OnStartCommand(Intent? intent, StartCommandFlags flags, int startId)
     {
-        var context = this;
         const string CHANNEL_ID = "dianxiao_dialer_channel";
         const int FOREGROUND_ID = 999;
 
@@ -210,21 +203,21 @@ public class DialerForegroundService : Service
         {
             var channel = new NotificationChannel(CHANNEL_ID,
                 "自动拨号服务", NotificationImportance.Low);
-            var manager = (NotificationManager)context.GetSystemService(Context.NotificationService);
+            var manager = (NotificationManager)GetSystemService(Context.NotificationService);
             manager.CreateNotificationChannel(channel);
         }
 
-        var notification = new NotificationCompat.Builder(context, CHANNEL_ID)
+        var notification = new NotificationCompat.Builder(this, CHANNEL_ID)
             .SetContentTitle("自动拨号运行中")
             .SetContentText("正在监听拨号界面，自动点击呼叫按钮")
-            .SetSmallIcon(Android.Resource.Drawable.SymActionCall)
+            .SetSmallIcon(AndroidResource.SymActionCall)
             .SetPriority(NotificationCompat.PriorityLow)
             .SetOngoing(true)
             .Build();
 
         if (Build.VERSION.SdkInt >= BuildVersionCodes.Q)
         {
-            StartForeground(FOREGROUND_ID, notification, global::Android.App.ForegroundService.TypePhoneCall);
+            StartForeground(FOREGROUND_ID, notification, (global::Android.App.ForegroundService)4);
         }
         else
         {
@@ -248,7 +241,6 @@ public class DialerAccessibilityService : AccessibilityService
 {
     public override void OnAccessibilityEvent(AccessibilityEvent? e)
     {
-        // 自动点击"呼叫"按钮的逻辑
         if (e?.EventType == EventTypes.WindowStateChanged || e?.EventType == EventTypes.WindowContentChanged)
         {
             TryClickCallButton(e);
@@ -260,7 +252,6 @@ public class DialerAccessibilityService : AccessibilityService
     protected override void OnServiceConnected()
     {
         base.OnServiceConnected();
-        // 服务连接成功
     }
 
     private void TryClickCallButton(AccessibilityEvent? e)
@@ -268,12 +259,11 @@ public class DialerAccessibilityService : AccessibilityService
         var root = RootInActiveWindow;
         if (root == null) return;
 
-        // 查找包含"呼叫"、"拨打"、"拨号"的按钮
         var callButtons = FindCallButtons(root);
         foreach (var btn in callButtons)
         {
-            btn.PerformAction(Action.Click);
-            break; // 只点第一个
+            btn.PerformAction(global::Android.Views.Accessibility.Action.Click);
+            break;
         }
     }
 

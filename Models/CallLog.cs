@@ -1,5 +1,6 @@
 using SQLite;
 using System.Windows.Input;
+using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 
 namespace DianxiaoMaui.Models;
@@ -57,9 +58,14 @@ public class CallLog
     {
         if (HasRecording)
         {
-            var player = new MediaElement();
-            player.Source = MediaSource.FromFile(RecordingPath);
-            player.Play();
+            try
+            {
+                await Launcher.Default.OpenAsync(new OpenApiOptions
+                {
+                    Target = Target.Uri(RecordingPath)
+                });
+            }
+            catch { }
         }
     });
 }
