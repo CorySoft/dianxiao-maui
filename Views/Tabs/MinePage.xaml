@@ -61,13 +61,7 @@
                                            VerticalOptions="Center">
                                         <Label.TextColor>
                                             <OnPlatform x:TypeArguments="Color">
-                                                <OnPlatform.Platforms>
-                                                    <On Platform="Android">
-                                                        <OnIdiom x:TypeArguments="Color">
-                                                            <OnIdiom.Phone>{StaticResource SuccessColor}</OnIdiom.Phone>
-                                                        </OnIdiom>
-                                                    </On>
-                                                </OnPlatform.Platforms>
+                                                <On Platform="Android">{StaticResource SuccessColor}</On>
                                             </OnPlatform>
                                         </Label.TextColor>
                                     </Label>

@@ -4,8 +4,7 @@
              xmlns:viewmodel="clr-namespace:DianxiaoMaui.ViewModels"
              x:Class="DianxiaoMaui.Views.Features.ContactDetailPage"
              Title="客户详情"
-             Shell.NavBarIsVisible="True"
-             Shell.BackButtonBehavior.IsEnabled="True">
+             Shell.NavBarIsVisible="True">
 
     <ContentPage.BindingContext>
         <viewmodel:ContactDetailViewModel />
