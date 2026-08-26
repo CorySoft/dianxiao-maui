@@ -68,7 +68,7 @@ public class AndroidDialerPlatform
         var notification = new NotificationCompat.Builder(context, CHANNEL_ID)
             .SetContentTitle("自动拨号运行中")
             .SetContentText("正在监听拨号界面，自动点击呼叫")
-            .SetSmallIcon(Resource.Mipmap.appicon)
+            .SetSmallIcon(Android.Resource.Drawable.SymActionCall)
             .SetPriority(NotificationCompat.PriorityLow)
             .SetOngoing(true)
             .Build();
@@ -217,7 +217,7 @@ public class DialerForegroundService : Service
         var notification = new NotificationCompat.Builder(context, CHANNEL_ID)
             .SetContentTitle("自动拨号运行中")
             .SetContentText("正在监听拨号界面，自动点击呼叫按钮")
-            .SetSmallIcon(Resource.Mipmap.appicon)
+            .SetSmallIcon(Android.Resource.Drawable.SymActionCall)
             .SetPriority(NotificationCompat.PriorityLow)
             .SetOngoing(true)
             .Build();
