@@ -3,7 +3,7 @@ namespace DianxiaoMaui.Views.Features;
 [QueryProperty(nameof(Title), "title")]
 public partial class PlaceholderPage : ContentPage
 {
-    public string Title { get; set; } = "敬请期待";
+    public new string Title { get; set; } = "敬请期待";
 
     public PlaceholderPage()
     {

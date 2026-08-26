@@ -5,9 +5,12 @@ using Android.Telecom;
 using Android.Telephony;
 using Android.Views.Accessibility;
 using AndroidX.Core.App;
+using DianxiaoMaui.Models;
 using DianxiaoMaui.Services;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
+using Microsoft.Maui.Platform;
+using Java.Lang;
 
 namespace DianxiaoMaui.Platforms.Android.Services;
 
@@ -39,7 +42,7 @@ public class AndroidDialerPlatform
         if (context == null) return Task.CompletedTask;
 
         // 启动前台服务（确保无障碍服务存活）
-        StartForegroundService();
+        StartAndroid.App.Service();
 
         // 使用 ACTION_DIAL 预填号码，让用户确认（或 ACTION_CALL 需权限）
         var uri = Android.Net.Uri.Parse("tel:" + phone);
@@ -49,7 +52,7 @@ public class AndroidDialerPlatform
         return Task.CompletedTask;
     }
 
-    private void StartForegroundService()
+    private void StartAndroid.App.Service()
     {
         var context = Platform.AppContext;
         if (context == null) return;
@@ -70,10 +73,10 @@ public class AndroidDialerPlatform
             .SetOngoing(true)
             .Build();
 
-        var serviceIntent = new Intent(context, typeof(DialerForegroundService));
+        var serviceIntent = new Intent(context, typeof(DialerAndroid.App.Service));
         if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
         {
-            context.StartForegroundService(serviceIntent);
+            context.StartAndroid.App.Service(serviceIntent);
         }
         else
         {
@@ -96,8 +99,8 @@ public class AndroidDialerPlatform
         _waitingPhone = phone;
 
         _telephony = (TelephonyManager)Platform.AppContext!.GetSystemService(Context.TelephonyService);
-        _listener = new CallStateListener(this);
-        _telephony.Listen(_listener, PhoneStateListenerFlags.CallState);
+        _listener = new DianxiaoMaui.Models.CallStateListener(this);
+        _telephony.Listen(_listener, PhoneStateListenerFlags.DianxiaoMaui.Models.CallState);
 
         token.Register(() =>
         {
@@ -109,16 +112,16 @@ public class AndroidDialerPlatform
         return _callEndTcs.Task;
     }
 
-    internal void OnCallStateChanged(CallState state, string? incomingNumber)
+    internal void OnDianxiaoMaui.Models.CallStateChanged(DianxiaoMaui.Models.CallState state, string? incomingNumber)
     {
         if (_callEndTcs is null) return;
 
         switch (state)
         {
-            case CallState.Offhook:
+            case DianxiaoMaui.Models.CallState.Offhook:
                 // 已接通
                 break;
-            case CallState.Idle:
+            case DianxiaoMaui.Models.CallState.Idle:
                 if (_callEndTcs.Task.IsCompleted) break;
                 // 通话结束
                 _callEndTcs.TrySetResult(true);
@@ -138,15 +141,15 @@ public class AndroidDialerPlatform
         _waitingPhone = null;
     }
 
-    private class CallStateListener : PhoneStateListener
+    private class DianxiaoMaui.Models.CallStateListener : PhoneStateListener
     {
         private readonly AndroidDialerPlatform _owner;
-        public CallStateListener(AndroidDialerPlatform owner) => _owner = owner;
+        public DianxiaoMaui.Models.CallStateListener(AndroidDialerPlatform owner) => _owner = owner;
 
-        public override void OnCallStateChanged(CallState state, string? incomingNumber)
+        public override void OnDianxiaoMaui.Models.CallStateChanged(DianxiaoMaui.Models.CallState state, string? incomingNumber)
         {
-            base.OnCallStateChanged(state, incomingNumber);
-            _owner.OnCallStateChanged(state, incomingNumber);
+            base.OnDianxiaoMaui.Models.CallStateChanged(state, incomingNumber);
+            _owner.OnDianxiaoMaui.Models.CallStateChanged(state, incomingNumber);
         }
     }
 
@@ -190,10 +193,10 @@ public class AndroidDialerPlatform
 
 #region 前台服务（保持无障碍服务存活）
 
-[Service(Name = "com.xinghe.dianxiao.DialerForegroundService",
-    ForegroundServiceType = ForegroundService.TypePhoneCall,
+[Service(Name = "com.xinghe.dianxiao.DialerAndroid.App.Service",
+    Android.App.ServiceType = Android.App.Service.TypePhoneCall,
     Exported = false)]
-public class DialerForegroundService : Service
+public class DialerAndroid.App.Service : Service
 {
     public override IBinder? OnBind(Intent? intent) => null;
 
@@ -219,7 +222,7 @@ public class DialerForegroundService : Service
             .SetOngoing(true)
             .Build();
 
-        StartForeground(FOREGROUND_ID, notification, ForegroundService.TypePhoneCall);
+        StartForeground(FOREGROUND_ID, notification, Android.App.Service.TypePhoneCall);
         return StartCommandResult.Sticky;
     }
 }

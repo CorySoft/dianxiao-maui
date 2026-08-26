@@ -13,7 +13,7 @@ public partial class App : Application
         Task.Run(async () => await DatabaseService.Instance.InitAsync());
     }
 
-    protected override Window CreateWindow(IWindow? window)
+    protected override Window CreateWindow(IActivationState activationState)
     {
         return new Window(new AppShell());
     }
