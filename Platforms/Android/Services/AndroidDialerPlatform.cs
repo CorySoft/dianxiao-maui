@@ -194,7 +194,7 @@ public class AndroidDialerPlatform
 #region 前台服务（保持无障碍服务存活）
 
 [Service(Name = "com.xinghe.dianxiao.DialerForegroundService",
-    ForegroundServiceType = 4, // ForegroundService.TypePhoneCall = 4
+    ForegroundServiceType = (Android.Content.PM.ForegroundService)4, // TypePhoneCall
     Exported = false)]
 public class DialerForegroundService : Service
 {
