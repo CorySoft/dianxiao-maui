@@ -1,6 +1,5 @@
 using SQLite;
 using System.Windows.Input;
-using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 
 namespace DianxiaoMaui.Models;
@@ -60,10 +59,7 @@ public class CallLog
         {
             try
             {
-                await Launcher.Default.OpenAsync(new OpenApiOptions
-                {
-                    Target = Target.Uri(RecordingPath)
-                });
+                await global::Microsoft.Maui.ApplicationModel.Launcher.Default.OpenAsync(RecordingPath!);
             }
             catch { }
         }

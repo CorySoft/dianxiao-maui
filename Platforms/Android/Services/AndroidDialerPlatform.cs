@@ -129,7 +129,7 @@ public class AndroidDialerPlatform
     {
         if (_telephony != null && _listener != null)
         {
-            _telephony.Listen(_listener, global::Android.Telephony.AndroidTelephony.PhoneStateListenerFlags.None);
+            _telephony.Listen(_listener, global::Android.Telephony.PhoneStateListenerFlags.None);
             _listener = null;
         }
         _telephony = null;
@@ -158,9 +158,9 @@ public class AndroidDialerPlatform
             var context = AppContext.Context;
             if (context == null) return Task.FromResult(false);
 
-            var enabledServices = global::Android.provider.Settings.Secure.GetString(
+            var enabledServices = global::Android.Provider.Settings.Secure.GetString(
                 context.ContentResolver,
-                global::Android.provider.Settings.Secure.EnabledAccessibilityServices);
+                global::Android.Provider.Settings.Secure.EnabledAccessibilityServices);
             if (string.IsNullOrEmpty(enabledServices)) return Task.FromResult(false);
 
             var pkg = context.PackageName;
@@ -177,7 +177,7 @@ public class AndroidDialerPlatform
         var context = AppContext.Context;
         if (context == null) return Task.CompletedTask;
 
-        var intent = new Intent(global::Android.provider.Settings.ActionAccessibilitySettings);
+        var intent = new Intent(global::Android.Provider.Settings.ActionAccessibilitySettings);
         intent.AddFlags(ActivityFlags.NewTask);
         context.StartActivity(intent);
         return Task.CompletedTask;
@@ -218,7 +218,7 @@ public class DialerForegroundService : Service
 
         if (Build.VERSION.SdkInt >= BuildVersionCodes.Q)
         {
-            StartForeground(FOREGROUND_ID, notification, (global::Android.App.ForegroundService)4);
+            StartForeground(FOREGROUND_ID, notification, 4);
         }
         else
         {

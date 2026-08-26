@@ -38,7 +38,7 @@ public static class NumberImporter
         int phoneIndex = -1;
         if (!string.IsNullOrEmpty(phoneColumn))
         {
-            phoneIndex = csv.GetFieldIndex(phoneColumn, false);
+            phoneIndex = csv.GetFieldIndex(phoneColumn);
         }
 
         while (await csv.ReadAsync())
