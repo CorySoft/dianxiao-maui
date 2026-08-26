@@ -3,7 +3,7 @@ using Android.AccessibilityServices;
 using Android.Content;
 using Android.OS;
 using Android.Telecom;
-using Android.Telephony;
+using AndroidTelephony = Android.Telephony;
 using Android.Views.Accessibility;
 using AndroidX.Core.App;
 using DianxiaoMaui.Models;
@@ -88,8 +88,8 @@ public class AndroidDialerPlatform
 
     #region 通话状态监听
 
-    private TelephonyManager? _telephony;
-    private PhoneStateListener? _listener;
+    private AndroidTelephony.TelephonyManager? _telephony;
+    private AndroidTelephony.PhoneStateListener? _listener;
     private TaskCompletionSource<bool>? _callEndTcs;
     private string? _waitingPhone;
 
@@ -100,7 +100,7 @@ public class AndroidDialerPlatform
 
         _telephony = (TelephonyManager)Platform.AppContext!.GetSystemService(Context.TelephonyService);
         _listener = new CallStateListener(this);
-        _telephony.Listen(_listener, PhoneStateListenerFlags.Android.Telephony.CallState);
+        _telephony.Listen(_listener, AndroidTelephony.PhoneStateListenerFlags.CallState);
 
         token.Register(() =>
         {
@@ -112,16 +112,16 @@ public class AndroidDialerPlatform
         return _callEndTcs.Task;
     }
 
-    internal void OnCallStateChanged(Android.Telephony.CallState state, string? incomingNumber)
+    internal void OnCallStateChanged(AndroidTelephony.CallState state, string? incomingNumber)
     {
         if (_callEndTcs is null) return;
 
         switch (state)
         {
-            case Android.Telephony.CallState.Offhook:
+            case AndroidTelephony.CallState.Offhook:
                 // 已接通
                 break;
-            case Android.Telephony.CallState.Idle:
+            case AndroidTelephony.CallState.Idle:
                 if (_callEndTcs.Task.IsCompleted) break;
                 // 通话结束
                 _callEndTcs.TrySetResult(true);
@@ -134,7 +134,7 @@ public class AndroidDialerPlatform
     {
         if (_telephony != null && _listener != null)
         {
-            _telephony.Listen(_listener, PhoneStateListenerFlags.None);
+            _telephony.Listen(_listener, AndroidTelephony.AndroidTelephony.PhoneStateListenerFlags.None);
             _listener = null;
         }
         _telephony = null;
@@ -146,7 +146,7 @@ public class AndroidDialerPlatform
         private readonly AndroidDialerPlatform _owner;
         public CallStateListener(AndroidDialerPlatform owner) => _owner = owner;
 
-        public override void OnCallStateChanged(Android.Telephony.CallState state, string? incomingNumber)
+        public override void OnCallStateChanged(AndroidTelephony.CallState state, string? incomingNumber)
         {
             base.OnCallStateChanged(state, incomingNumber);
             _owner.OnCallStateChanged(state, incomingNumber);
