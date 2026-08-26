@@ -17,6 +17,12 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
     - name: Setup .NET 10
       uses: actions/setup-dotnet@v4
       with:
@@ -43,6 +49,31 @@ jobs:
           -f net10.0-android36.0 \
           -p:AndroidSdkDirectory=$ANDROID_HOME \
           -p:AndroidPackageFormat=apk
+
+    - name: Create debug keystore
+      run: |
+        KEYSTORE=$RUNNER_TEMP/debug.keystore
+        if [ ! -f "$KEYSTORE" ]; then
+          keytool -genkey -v -keystore "$KEYSTORE" \
+            -storepass android -keypass android \
+            -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 \
+            -dname "CN=Android Debug,O=Android,C=US" \
+            -storetype pkcs12 2>/dev/null || true
+        fi
+        echo "KEYSTORE=$KEYSTORE" >> $GITHUB_ENV
+
+    - name: Sign APK
+      run: |
+        APK_PATH=$(find . -name "*.apk" -path "*/bin/Release/*" | head -1)
+        SIGNED="$APK_PATH.signed"
+        if command -v jarsigner &>/dev/null; then
+          jarsigner -verbose -keystore "$KEYSTORE" -storepass android -keypass android \
+            -signedjar "$SIGNED" "$APK_PATH" androiddebugkey 2>&1
+          mv "$SIGNED" "$APK_PATH"
+          echo "Signed: $APK_PATH"
+        else
+          echo "jarsigner not found, APK unsigned"
+        fi
 
     - name: Find APK
       id: find_apk
